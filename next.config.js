@@ -12,9 +12,11 @@ const nextConfig = {
   },
   images: {
     remotePatterns: [
-      new URL(
-        "https://learn-codeit-kr-static.s3.ap-northeast-2.amazonaws.com/codeitmall/**"
-      ),
+      {
+        protocol: "https",
+        hostname: "learn-codeit-kr-static.s3.ap-northeast-2.amazonaws.com",
+        pathname: "/codeitmall/**",
+      },
     ],
   },
 };
