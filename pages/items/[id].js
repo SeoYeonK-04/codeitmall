@@ -5,25 +5,32 @@ import styles from "@/styles/Product.module.css";
 import SizeReviewList from "@/components/SizeReviewList";
 import StarRating from "@/components/StarRating";
 import Image from "next/image";
+import Spinner from "@/components/Spinner";
 
 export async function getStaticPaths() {
+  const res = await axios.get("/products/");
+  const products = res.data.results;
+  const paths = products.map((product) => ({
+    params: { id: String(product.id) },
+  }));
+
   return {
-    paths: [
-      {
-        params: { id: "1" },
-      },
-      {
-        params: { id: "2" },
-      },
-    ],
-    fallback: false,
+    paths,
+    fallback: true,
   };
 }
 
 export async function getStaticProps(context) {
   const productId = context.params["id"];
-  const res = await axios.get(`/products/${productId}`);
-  const product = res.data;
+  let product;
+  try {
+    const res = await axios.get(`/products/${productId}`);
+    product = res.data;
+  } catch {
+    return {
+      notFound: true,
+    };
+  }
 
   return {
     props: {
@@ -49,7 +56,12 @@ export default function Product({ product }) {
     getSizeReviews(id);
   }, [id]);
 
-  if (!product) return null;
+  if (!product)
+    return (
+      <div className={styles.loading}>
+        <Spinner />
+      </div>
+    );
 
   return (
     <>
